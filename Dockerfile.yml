@@ -1,0 +1,18 @@
+# Step 1: Build the app
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /app
+
+COPY *app.csproj ./
+RUN dotnet restore
+
+COPY . ./
+RUN dotnet publish -c Release -o backend
+  
+  # Step 2: Run the app
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
+WORKDIR /app
+
+COPY --from=build /app/backend .
+  
+  # 🔁 Replace this with your real .dll name
+ENTRYPOINT ["dotnet", "app.dll"]
